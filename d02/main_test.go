@@ -6,8 +6,14 @@ import (
 
 func TestPart1(t *testing.T) {
 	d := dataT{
-		leftColumn:  []int{3, 4, 2, 1, 3, 3},
-		rightColumn: []int{4, 3, 5, 3, 9, 3},
+		report: [][]int{
+			{7, 6, 4, 2, 1},
+			{1, 2, 7, 8, 9},
+			{9, 7, 6, 2, 1},
+			{1, 3, 2, 4, 5},
+			{8, 6, 4, 4, 1},
+			{1, 3, 6, 7, 9},
+		},
 	}
 	tt := struct {
 		name string
@@ -17,11 +23,10 @@ func TestPart1(t *testing.T) {
 	}{
 		name: "part1",
 		data: d,
-		sumA: 11,
+		sumA: 2,
 	}
 	t.Run(tt.name, func(t *testing.T) {
-		d.sortData()
-		tt.sumQ, _ = d.addDistance()
+		tt.sumQ, _, _ = d.safeReports()
 		if tt.sumA != tt.sumQ {
 			t.Fatalf("\n%s: Expected: %d - got: %d\n", tt.name, tt.sumA, tt.sumQ)
 		}
@@ -30,8 +35,14 @@ func TestPart1(t *testing.T) {
 
 func TestPart2(t *testing.T) {
 	d := dataT{
-		leftColumn:  []int{3, 4, 2, 1, 3, 3},
-		rightColumn: []int{4, 3, 5, 3, 9, 3},
+		report: [][]int{
+			{7, 6, 4, 2, 1},
+			{1, 2, 7, 8, 9},
+			{9, 7, 6, 2, 1},
+			{1, 3, 2, 4, 5},
+			{8, 6, 4, 4, 1},
+			{1, 3, 6, 7, 9},
+		},
 	}
 	tt := struct {
 		name string
@@ -41,11 +52,12 @@ func TestPart2(t *testing.T) {
 	}{
 		name: "part2",
 		data: d,
-		sumA: 31,
+		sumA: 4,
 	}
 	t.Run(tt.name, func(t *testing.T) {
-		d.sortData()
-		tt.sumQ, _ = d.addSimilar()
+		safe, unsafe, _ := d.safeReports()
+		dampened, _ := unsafe.dampenedReports()
+		tt.sumQ = safe + dampened
 		if tt.sumA != tt.sumQ {
 			t.Fatalf("\n%s: Expected: %d - got: %d\n", tt.name, tt.sumA, tt.sumQ)
 		}
