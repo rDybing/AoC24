@@ -33,7 +33,7 @@ func main() {
 	var dampened int
 	dampened, err = unsafe.dampenedReports()
 	if err != nil {
-		fmt.Printf("Failed generating number of safe reports: %v\n", err)
+		fmt.Printf("Failed generating number of safe and dampened reports: %v\n", err)
 	}
 	fmt.Printf("Part2: Safe + dampened reports sum: %d\n", safe+dampened)
 

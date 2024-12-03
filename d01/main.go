@@ -49,6 +49,7 @@ func main() {
 	diff := done.Sub(start)
 	fmt.Printf("Execution time: %d µSeconds\n", diff.Microseconds())
 }
+
 func (d dataT) addSimilar() (int, error) {
 	var similar int
 	for _, lc := range d.leftColumn {
