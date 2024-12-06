@@ -24,14 +24,14 @@ func main() {
 	// part 1
 	p1, err := d.p1()
 	if err != nil {
-		fmt.Printf("Failed generating sum of mul(x,y): %v\n", err)
+		fmt.Printf("Part 1 failed: %v\n", err)
 	}
 	fmt.Printf("Part1: %d\n", p1)
 
 	// part 2
 	p2, err := d.p2()
 	if err != nil {
-		fmt.Printf("Failed generating sum of mul(x,y) with control codes: %v\n", err)
+		fmt.Printf("Part 2 failed: %v\n", err)
 	}
 	fmt.Printf("Part2: %d\n", p2)
 
