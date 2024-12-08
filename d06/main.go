@@ -75,13 +75,18 @@ func (d dataT) p1() (int, error) {
 	if err != nil {
 		log.Panicf("Parsing data failed: %v\n", err)
 	}
+	var limit int
 	for !bounds {
+		limit++
+		if limit > 10 {
+			break
+		}
 		bounds, step = m.moveGuard()
 		if step {
 			sum++
 		}
 		m.drawMap()
-		fmt.Printf("pos: %+v - step: %d\n", m.guard, sum)
+		fmt.Printf("posY: %v - posX: %v - dir: %v - step: %d\n", m.guard.posY, m.guard.posX, m.guard.dir, sum)
 	}
 	return sum, nil
 }
@@ -92,99 +97,85 @@ func (d dataT) p2() (int, error) {
 }
 
 func (m *mapT) moveGuard() (bool, bool) {
-	var bounds, step bool
+	var b, s bool
+	fmt.Printf("dir: %v\n", m.guard.dir)
 	switch m.guard.dir {
 	case 0:
 		m.guard.posY--
-		fmt.Printf("%d\n", m.pos[m.guard.posX][m.guard.posY])
+		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posY < 0 {
-			bounds = true
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 1 {
+			b = true
+			s = false
+		} else if m.pos[m.guard.posY][m.guard.posX] == 1 {
 			m.guard.posY++
 			m.guard.dir++
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 2 {
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 0 {
-			m.pos[m.guard.posY][m.guard.posX] = 2
-			bounds = false
-			step = true
+			b = false
+			s = false
+		} else {
+			b, s = m.moveGuardCommon()
 		}
 	case 1:
 		m.guard.posX++
+		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posX > m.maxPosX {
-			bounds = true
-			step = false
-		}
-		if m.pos[m.maxPosY][m.guard.posX] == 1 {
+			b = true
+			s = false
+		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
 			m.guard.posX--
 			m.guard.dir++
-			bounds = false
-			step = false
+			b = false
+			s = false
+		} else {
+			b, s = m.moveGuardCommon()
 		}
-		if m.pos[m.guard.posY][m.guard.posX] == 2 {
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 0 {
-			m.pos[m.guard.posY][m.guard.posX] = 2
-			bounds = false
-			step = true
-		}
-	case 3:
+	case 2:
 		m.guard.posY++
+		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posY > m.maxPosY {
-			bounds = true
-			step = false
-		}
-		if m.pos[m.maxPosY][m.guard.posX] == 1 {
+			b = true
+			s = false
+		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
 			m.guard.posY--
 			m.guard.dir++
-			bounds = false
-			step = false
+			b = false
+			s = false
+		} else {
+			b, s = m.moveGuardCommon()
 		}
-		if m.pos[m.guard.posY][m.guard.posX] == 2 {
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 0 {
-			m.pos[m.guard.posY][m.guard.posX] = 2
-			bounds = false
-			step = true
-		}
-	case 4:
+	case 3:
 		m.guard.posX--
+		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posX < 0 {
-			bounds = true
-			step = false
-		}
-		if m.pos[m.maxPosY][m.guard.posX] == 1 {
+			b = true
+			s = false
+		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
 			m.guard.posX++
 			m.guard.dir = 0
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 2 {
-			bounds = false
-			step = false
-		}
-		if m.pos[m.guard.posY][m.guard.posX] == 0 {
-			m.pos[m.guard.posY][m.guard.posX] = 2
-			bounds = false
-			step = true
+			b = false
+			s = false
+		} else {
+			b, s = m.moveGuardCommon()
 		}
 	}
-	return bounds, step
+	return b, s
+}
+
+func (m *mapT) moveGuardCommon() (bool, bool) {
+	var b, s bool
+	if m.pos[m.guard.posY][m.guard.posX] == 2 {
+		b = false
+		s = false
+	}
+	if m.pos[m.guard.posY][m.guard.posX] == 0 {
+		m.pos[m.guard.posY][m.guard.posX] = 2
+		b = false
+		s = true
+	}
+	return b, s
 }
 
 func (m mapT) drawMap() {
-	for y, _ := range m.pos {
+	for y := range m.pos {
 		for x, v := range m.pos[y] {
 			if v == 1 {
 				fmt.Print("#")
@@ -239,7 +230,7 @@ func (d dataT) parseData() (mapT, error) {
 }
 
 func (d *dataT) importData() error {
-	f, err := os.ReadFile("./data.txt")
+	f, err := os.ReadFile("./dataTest.txt")
 	if err != nil {
 		return err
 	}
