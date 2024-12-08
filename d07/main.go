@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
 type dataT struct {
 	line []string
+}
+
+type equationT struct {
+	sum int
+	arg []int
 }
 
 func main() {
@@ -42,7 +48,28 @@ func main() {
 
 func (d dataT) p1() (int, error) {
 	var sum int
+	for _, v := range d.line {
+		var eq equationT
+		eq.splitLine(v)
+		fmt.Printf("%+v\n", eq)
+		if eq.testArgs() {
+			sum += eq.sum
+		}
+	}
 	return sum, nil
+}
+
+func (eq equationT) testArgs() bool {
+}
+
+func (eq *equationT) splitLine(line string) {
+	temp := strings.Split(line, ": ")
+	eq.sum, _ = strconv.Atoi(temp[0])
+	temp2 := strings.Split(temp[1], " ")
+	for _, v := range temp2 {
+		temp3, _ := strconv.Atoi(v)
+		eq.arg = append(eq.arg, temp3)
+	}
 }
 
 func (d dataT) p2() (int, error) {

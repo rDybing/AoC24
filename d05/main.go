@@ -10,14 +10,18 @@ import (
 
 type dataT struct {
 	line []string
+	rule []string
 }
 
 func main() {
 	// setup
 	var d dataT
-	err := d.importData()
-	if err != nil {
+	if err := d.importData(); err != nil {
 		log.Panicf("Failed loading data file: %v\n", err)
+	}
+	// split input
+	if err := d.splitData(); err != nil {
+		log.Panicf("Failed splitting data: %v\n", err)
 	}
 	start := time.Now()
 
@@ -42,7 +46,6 @@ func main() {
 }
 
 func (d dataT) p1() (int, error) {
-	//var realMul []string
 	var sum int
 	return sum, nil
 }
@@ -50,6 +53,25 @@ func (d dataT) p1() (int, error) {
 func (d dataT) p2() (int, error) {
 	var sum int
 	return sum, nil
+}
+
+func (d *dataT) splitData() error {
+	var split bool
+	var index int
+	for i, v := range d.line {
+		if split {
+			d.rule = append(d.rule, v)
+		}
+		if v == "" {
+			split = true
+			index = i
+		}
+	}
+	temp := d.line[0:index]
+	d.line = nil
+	d.line = temp
+	//fmt.Printf("%v\n\n%v\n", d.line, d.rule)
+	return nil
 }
 
 func (d *dataT) importData() error {
