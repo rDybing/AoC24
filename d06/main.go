@@ -75,18 +75,13 @@ func (d dataT) p1() (int, error) {
 	if err != nil {
 		log.Panicf("Parsing data failed: %v\n", err)
 	}
-	var limit int
 	for !bounds {
-		limit++
-		if limit > 10 {
-			break
-		}
 		bounds, step = m.moveGuard()
 		if step {
 			sum++
 		}
-		m.drawMap()
-		fmt.Printf("posY: %v - posX: %v - dir: %v - step: %d\n", m.guard.posY, m.guard.posX, m.guard.dir, sum)
+		//m.drawMap()
+		//fmt.Printf("posY: %v - posX: %v - dir: %v - step: %d - bounds: %v\n", m.guard.posY, m.guard.posX, m.guard.dir, sum, bounds)
 	}
 	return sum, nil
 }
@@ -98,11 +93,9 @@ func (d dataT) p2() (int, error) {
 
 func (m *mapT) moveGuard() (bool, bool) {
 	var b, s bool
-	fmt.Printf("dir: %v\n", m.guard.dir)
 	switch m.guard.dir {
 	case 0:
 		m.guard.posY--
-		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posY < 0 {
 			b = true
 			s = false
@@ -116,11 +109,10 @@ func (m *mapT) moveGuard() (bool, bool) {
 		}
 	case 1:
 		m.guard.posX++
-		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posX > m.maxPosX {
 			b = true
 			s = false
-		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
+		} else if m.pos[m.guard.posY][m.guard.posX] == 1 {
 			m.guard.posX--
 			m.guard.dir++
 			b = false
@@ -130,11 +122,10 @@ func (m *mapT) moveGuard() (bool, bool) {
 		}
 	case 2:
 		m.guard.posY++
-		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posY > m.maxPosY {
 			b = true
 			s = false
-		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
+		} else if m.pos[m.guard.posY][m.guard.posX] == 1 {
 			m.guard.posY--
 			m.guard.dir++
 			b = false
@@ -144,11 +135,10 @@ func (m *mapT) moveGuard() (bool, bool) {
 		}
 	case 3:
 		m.guard.posX--
-		fmt.Printf("next content: %d - posY: %d - posX: %d\n", m.pos[m.guard.posY][m.guard.posX], m.guard.posY, m.guard.posX)
 		if m.guard.posX < 0 {
 			b = true
 			s = false
-		} else if m.pos[m.maxPosY][m.guard.posX] == 1 {
+		} else if m.pos[m.guard.posY][m.guard.posX] == 1 {
 			m.guard.posX++
 			m.guard.dir = 0
 			b = false
@@ -165,8 +155,7 @@ func (m *mapT) moveGuardCommon() (bool, bool) {
 	if m.pos[m.guard.posY][m.guard.posX] == 2 {
 		b = false
 		s = false
-	}
-	if m.pos[m.guard.posY][m.guard.posX] == 0 {
+	} else {
 		m.pos[m.guard.posY][m.guard.posX] = 2
 		b = false
 		s = true
@@ -226,11 +215,12 @@ func (d dataT) parseData() (mapT, error) {
 		}
 		m.pos = append(m.pos, tempX)
 	}
+	fmt.Printf("maxPosY: %d - maxPosX: %d\n", m.maxPosY, m.maxPosX)
 	return m, nil
 }
 
 func (d *dataT) importData() error {
-	f, err := os.ReadFile("./dataTest.txt")
+	f, err := os.ReadFile("./data.txt")
 	if err != nil {
 		return err
 	}
